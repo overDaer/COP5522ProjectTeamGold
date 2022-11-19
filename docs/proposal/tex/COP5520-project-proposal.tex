@@ -1,0 +1,38 @@
+% ----------------------------------------------------------------
+% AMS-LaTeX Paper ************************************************
+% **** -----------------------------------------------------------
+\documentclass{amsart}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage[fontsize=12bp]{fontsize}
+\graphicspath{ {./images/} }
+
+% ----------------------------------------------------------------
+\vfuzz2pt % Don't report over-full v-boxes if over-edge is small
+\hfuzz2pt % Don't report over-full h-boxes if over-edge is small
+\begin{document}
+
+\title{COP5520\\{\bf Project Proposal}}%
+\author{Farooq Mahmud}%
+\author{Dae Hyun Sung}%
+\date{}
+
+%\dedicatory{}%
+%\commby{}%
+% ----------------------------------------------------------------
+
+\maketitle\
+\thispagestyle{empty}
+\section{Introduction}
+We propose to parallelize the Fast Fourier Transform (FFT) algorithm used for solving the Discrete Fourier Transform. A preliminiary search of existing FFT non-paralllel implementations in C have not been fruitful although there are several C++ and Python implementations to be found. If we cannot find a suitable C implementation we will implement our own non-parallel version based on available pseudocode~\cite{cormen}. We will then implement parallel versions using UNIX pThreads, OpenMP, and MPI.  
+
+\section{Performance Evaluation}
+The input to the FFT is a vector representing the samples of a function's value between a given time interval. Therefore we will assess the performance with varying vector lengths. Ideally the FFT algorithm has a runtime of $\Theta \;n\;log(n)$ ~\cite{cormen}. We'd like to verify that runtime in the non-parallel and parallel implementations. We will also assess the runtime improvement of the parallel algorithm based on the availability of additional threads (in the case of pThreads and OpenMP) and processor cores (in the case of MPI).
+
+\section{Potential Challenges}
+The non-parallel implementation of the FFT is a typical divide-and-conquer algorithm~\cite{blelloch}. Therefore the algorithm is well-suited to parallelization. We anticipate the challenge will be to understand the mathematics behind the algorithm so that we can verify correctness. We will write tests in order to verify the algorithm is correct as we write our code. 
+
+\bibliographystyle{plain}
+\bibliography{COP5520-project-proposal}
+\end{document}
