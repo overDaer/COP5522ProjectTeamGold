@@ -5,7 +5,7 @@
 
 int main(int argc, char const *argv[])
 {
-    int length = 16;
+    int length = 1024 * 1024;
 
     if ((length & length -1 ) != 0 ) {
         fprintf(stderr, "Length must be a power of 2.");
@@ -40,6 +40,9 @@ int main(int argc, char const *argv[])
 #endif
 
     free(sumWave);
+    free(sineWave1);
+    free(sineWave2);
+    free(sineWave3);
 
     printf("\nTime = %g ms\n", (endTime - startTime) / 1000);
     printf("Timer Resolution = %g us\n", getMicrotimeResolution());
