@@ -5,7 +5,13 @@
 
 int main(int argc, char const *argv[])
 {
-    int length = 1024 * 1024;
+    int length = 16;
+
+    if ((length & length -1 ) != 0 ) {
+        fprintf(stderr, "Length must be a power of 2.");
+        exit(-1);
+    }
+
     struct complex *sumWave = malloc(length * sizeof(struct complex));
     //create arbitrary sine waves to sum
     struct complex *sineWave1 = GenerateSineArray(length, 1, 10);
@@ -17,8 +23,10 @@ int main(int argc, char const *argv[])
         sumWave[i].imag = sineWave1[i].imag + sineWave2[i].imag + sineWave3[i].imag;
     }
 
+#ifdef DEBUG
     printf("Printing input Array\n");
     PrintComplexArray(sumWave, length);
+#endif
 
     double startTime = microtime();
 
@@ -26,8 +34,10 @@ int main(int argc, char const *argv[])
 
     double endTime = microtime();
 
+#ifdef DEBUG
     printf("Printing output Array\n");
     PrintComplexArray(sumWave, length);
+#endif
 
     free(sumWave);
 
