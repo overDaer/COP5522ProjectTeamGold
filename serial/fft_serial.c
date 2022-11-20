@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fft.h"
-
+#include "microtime.h"
 
 int main(int argc, char const *argv[])
 {
-    int length = 16;
+    int length = 1024 * 1024;
     struct complex *sumWave = malloc(length * sizeof(struct complex));
     //create arbitrary sine waves to sum
     struct complex *sineWave1 = GenerateSineArray(length, 1, 10);
@@ -16,12 +16,23 @@ int main(int argc, char const *argv[])
         sumWave[i].real = sineWave1[i].real + sineWave2[i].real + sineWave3[i].real;
         sumWave[i].imag = sineWave1[i].imag + sineWave2[i].imag + sineWave3[i].imag;
     }
+
     printf("Printing input Array\n");
     PrintComplexArray(sumWave, length);
+
+    double startTime = microtime();
+
     recursiveFFT(sumWave, length);
+
+    double endTime = microtime();
+
     printf("Printing output Array\n");
     PrintComplexArray(sumWave, length);
+
     free(sumWave);
+
+    printf("\nTime = %g ms\n", (endTime - startTime) / 1000);
+    printf("Timer Resolution = %g us\n", getMicrotimeResolution());
     /* code */
     return 0;
 }

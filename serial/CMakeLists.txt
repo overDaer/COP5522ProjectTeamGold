@@ -9,6 +9,8 @@ include_directories(.)
 add_executable(fft_serial
         fft_serial.c
         fft.h
-        fft.c)
+        fft.c
+        microtime.c
+        microtime.h)
 
 target_link_libraries(fft_serial PRIVATE m)
