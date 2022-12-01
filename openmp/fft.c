@@ -1,14 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <omp.h>
 #include "fft.h"
-
+#include "microtime.h"
 
 // Adapted from https://github.com/rshuston/FFT-C
 void iterativeFFT(struct complex *inputArray, int length)
 {
+//    double shuffleStart = microtime();
     shuffle(inputArray, length);
+//    double shuffleEnd = microtime();
+
+//    double evalStart = microtime();
     evaluate(inputArray, length);
+//    double evalEnd = microtime();
+
+//    printf("\nShuffle Time = %g ms\n", (shuffleEnd - shuffleStart) / 1000);
+//    printf("\nEval Time = %g ms\n", (evalEnd - evalStart) / 1000);
 }
 
 // Adapted from https://github.com/rshuston/FFT-C
@@ -50,21 +59,24 @@ void evaluate(struct complex *data, int length)
     N = 1 << length;
     theta_2pi = -M_PI;
     theta_2pi *= 2;
+//
+//    int outerCount = 0;
+//    int innerCount = 0;
 
     for (r = 1; r <= length; r++)
     {
+//        outerCount++;
         m = 1 << r;
         md2 = m >> 1;
         theta = theta_2pi / m;
         Wm.real = cos(theta);
         Wm.imag = sin(theta);
 
-        for (n = 0; n < N; n += m)
-        {
+        for (n = 0; n < N; n += m) {
+//                    innerCount++;
             Wmk.real = 1.f;
             Wmk.imag = 0.f;
-            for (k = 0; k < md2; k++)
-            {
+            for (k = 0; k < md2; k++) {
                 i_e = n + k;
                 i_o = i_e + md2;
                 u.real = data[i_e].real;
@@ -79,6 +91,9 @@ void evaluate(struct complex *data, int length)
             }
         }
     }
+//
+//    printf("Outer loop executions: %d\n", outerCount);
+//    printf("Inner loop executions: %d\n", innerCount);
 }
 
 void PrintComplexArray(struct complex *printingArray, int length) {
