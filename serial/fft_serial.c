@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "fft.h"
 #include "microtime.h"
 
-int main(int argc, char const *argv[])
-{
-    int length = 1024 * 1024;
-
-    if ((length & length -1 ) != 0 ) {
-        fprintf(stderr, "Length must be a power of 2.");
+int main(int argc, char const *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "USAGE: %s [power of 2]", argv[0]);
         exit(-1);
     }
+
+    int powerOf2 = atoi(argv[1]);
+    int length = pow(2, powerOf2);
 
     struct complex *sumWave = malloc(length * sizeof(struct complex));
     //create arbitrary sine waves to sum
@@ -18,7 +19,7 @@ int main(int argc, char const *argv[])
     struct complex *sineWave2 = GenerateSineArray(length, 2, 4);
     struct complex *sineWave3 = GenerateSineArray(length, 4, 5);
     //add sine waves into complex sumWave
-    for (int i = 0; i < length; i++){
+    for (int i = 0; i < length; i++) {
         sumWave[i].real = sineWave1[i].real + sineWave2[i].real + sineWave3[i].real;
         sumWave[i].imag = sineWave1[i].imag + sineWave2[i].imag + sineWave3[i].imag;
     }
@@ -29,9 +30,7 @@ int main(int argc, char const *argv[])
 #endif
 
     double startTime = microtime();
-
     recursiveFFT(sumWave, length);
-
     double endTime = microtime();
 
 #ifdef DEBUG
