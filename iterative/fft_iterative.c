@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "fft.h"
 #include "microtime.h"
 
 int main(int argc, char const *argv[]) {
-    int length = 1024 * 1024;
 
-    if ((length & length - 1) != 0) {
-        fprintf(stderr, "Length must be a power of 2.");
+    if (argc != 2) {
+        fprintf(stderr, "USAGE: %s [power of 2]\n", argv[0]);
         exit(-1);
     }
+
+    int powerOf2 = atoi(argv[1]);
+    int length = pow(2, powerOf2);
 
     struct complex *sumWave = malloc(length * sizeof(struct complex));
     //create arbitrary sine waves to sum
@@ -24,20 +27,17 @@ int main(int argc, char const *argv[]) {
 
 #ifdef DEBUG
     printf("Printing input Array\n");
-    PrintComplexArray(sumWave, length);
+    PrintComplexArray(sumWave, powerOf2);
 #endif
 
     struct complex *output = malloc(length * sizeof(struct complex));
-
     double startTime = microtime();
-
-    iterativeFFT(sumWave, output, length);
-
+    iterativeFFT(sumWave, powerOf2);
     double endTime = microtime();
 
 #ifdef DEBUG
     printf("Printing output Array\n");
-    PrintComplexArray(output, length);
+    PrintComplexArray(sumWave, powerOf2);
 #endif
 
     free(sumWave);
@@ -45,6 +45,7 @@ int main(int argc, char const *argv[]) {
     free(sineWave1);
     free(sineWave2);
     free(sineWave3);
+
 
     printf("\nTime = %g ms\n", (endTime - startTime) / 1000);
     printf("Timer Resolution = %g us\n", getMicrotimeResolution());
