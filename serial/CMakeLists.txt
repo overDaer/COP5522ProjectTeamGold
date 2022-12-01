@@ -1,19 +1,20 @@
 cmake_minimum_required(VERSION 3.24)
-project(fft_serial C)
-
+set(CMAKE_PROJECT_NAME  "fft_iterative")
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "-O3")
 
 # Comment the line below to disable printing.
 #set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
+project(${CMAKE_PROJECT_NAME} C)
+
 include_directories(.)
 
-add_executable(fft_serial
+add_executable(${CMAKE_PROJECT_NAME}
         fft_serial.c
         fft.h
         fft.c
         microtime.c
         microtime.h)
 
-target_link_libraries(fft_serial PRIVATE m)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE m)
