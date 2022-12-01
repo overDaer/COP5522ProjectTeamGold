@@ -27,7 +27,7 @@ int main(int argc, char const *argv[]) {
 
 #ifdef DEBUG
     printf("Printing input Array\n");
-    PrintComplexArray(sumWave, powerOf2);
+    PrintComplexArray(sumWave, length);
 #endif
 
     struct complex *output = malloc(length * sizeof(struct complex));
@@ -37,7 +37,7 @@ int main(int argc, char const *argv[]) {
 
 #ifdef DEBUG
     printf("Printing output Array\n");
-    PrintComplexArray(sumWave, powerOf2);
+    PrintComplexArray(sumWave, length);
 #endif
 
     free(sumWave);
