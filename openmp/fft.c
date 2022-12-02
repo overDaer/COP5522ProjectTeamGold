@@ -6,46 +6,40 @@
 #include "microtime.h"
 
 // Adapted from https://github.com/rshuston/FFT-C
-void iterativeFFT(struct complex *inputArray, int length)
-{
-//    double shuffleStart = microtime();
+void iterativeFFT(struct complex *inputArray, int length) {
     shuffle(inputArray, length);
-//    double shuffleEnd = microtime();
-
-//    double evalStart = microtime();
     evaluate(inputArray, length);
-//    double evalEnd = microtime();
-
-//    printf("\nShuffle Time = %g ms\n", (shuffleEnd - shuffleStart) / 1000);
-//    printf("\nEval Time = %g ms\n", (evalEnd - evalStart) / 1000);
 }
 
 // Adapted from https://github.com/rshuston/FFT-C
-void shuffle(struct complex *data, int length)
-{
-    int N = 1 << length;
-    int Nd2 = N >> 1;
-    int Nm1 = N - 1;
-    int i;
-    int j;
+void shuffle(struct complex *data, int length) {
 
-    for (i = 0, j = 0; i < N; i++) {
-        if (j > i) {
-            struct complex tmp = data[i];
-            data[i] = data[j];
-            data[j] = tmp;
+#pragma omp parallel default(none) shared(length, data)
+    {
+        int i;
+        int j = 0;
+        int N = 1 << length;
+        int Nd2 = N >> 1;
+        int Nm1 = N - 1;
+
+#pragma omp for nowait
+        for (i = 0; i < N; i++) {
+            if (j > i) {
+                struct complex tmp = data[i];
+                data[i] = data[j];
+                data[j] = tmp;
+            }
+
+            int lszb = ~i & (i + 1);
+            int mszb = Nd2 / lszb;
+            int bits = Nm1 & ~(mszb - 1);
+            j ^= bits;
         }
-
-        int lszb = ~i & (i + 1);
-        int mszb = Nd2 / lszb;
-        int bits = Nm1 & ~(mszb - 1);
-        j ^= bits;
     }
 }
 
 // Adapted from https://github.com/rshuston/FFT-C
-void evaluate(struct complex *data, int length)
-{
+void evaluate(struct complex *data, int length) {
     unsigned N;
     unsigned r;
     unsigned m, md2;
@@ -59,13 +53,8 @@ void evaluate(struct complex *data, int length)
     N = 1 << length;
     theta_2pi = -M_PI;
     theta_2pi *= 2;
-//
-//    int outerCount = 0;
-//    int innerCount = 0;
 
-    for (r = 1; r <= length; r++)
-    {
-//        outerCount++;
+    for (r = 1; r <= length; r++) {
         m = 1 << r;
         md2 = m >> 1;
         theta = theta_2pi / m;
@@ -73,7 +62,6 @@ void evaluate(struct complex *data, int length)
         Wm.imag = sin(theta);
 
         for (n = 0; n < N; n += m) {
-//                    innerCount++;
             Wmk.real = 1.f;
             Wmk.imag = 0.f;
             for (k = 0; k < md2; k++) {
@@ -90,6 +78,7 @@ void evaluate(struct complex *data, int length)
                 Wmk = t;
             }
         }
+
     }
 //
 //    printf("Outer loop executions: %d\n", outerCount);
