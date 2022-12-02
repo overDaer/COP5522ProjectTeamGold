@@ -2,21 +2,30 @@
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
+#include <string.h>
+#include <stdbool.h>
 #include "fft.h"
 #include "microtime.h"
 
-_Bool isPowerOf2(int n) {
+bool isPowerOf2(int n) {
     return n && (!(n & (n - 1)));
 }
 
 int main(int argc, char const *argv[]) {
 
-    if (argc != 3) {
-        fprintf(stderr, "USAGE: %s [power of 2] [threads]\n", argv[0]);
+    if (argc < 3 || argc > 4) {
+        fprintf(stderr, "USAGE: %s [power of 2] [threads] [--print]\n", argv[0]);
         exit(-1);
     }
 
     int threads = atoi(argv[2]);
+    bool printOutput = false;
+
+    if (argc == 4) {
+        if (strcmp(argv[3], "--print") == 0) {
+            printOutput = true;
+        }
+    }
 
     if (!isPowerOf2(threads)) {
         fprintf(stderr, "Threads must be power of 2.\n");
@@ -25,6 +34,8 @@ int main(int argc, char const *argv[]) {
 
     int powerOf2 = atoi(argv[1]);
     int length = pow(2, powerOf2);
+
+    printf("Input is of length %d\n", length);
 
     omp_set_dynamic(0);
     omp_set_num_threads(threads);
@@ -41,26 +52,25 @@ int main(int argc, char const *argv[]) {
         sumWave[i].imag = sineWave1[i].imag + sineWave2[i].imag + sineWave3[i].imag;
     }
 
-#ifdef DEBUG
-    printf("Printing input Array\n");
-    PrintComplexArray(sumWave, length);
-#endif
-
+    if (printOutput) {
+        printf("Printing input Array\n");
+        PrintComplexArray(sumWave, length);
+    }
     struct complex *output = malloc(length * sizeof(struct complex));
     double startTime = microtime();
     iterativeFFT(sumWave, powerOf2);
     double endTime = microtime();
-#ifdef DEBUG
-    printf("Printing output Array\n");
-    PrintComplexArray(sumWave, length);
-#endif
+
+    if (printOutput) {
+        printf("Printing output Array\n");
+        PrintComplexArray(sumWave, length);
+    }
 
     free(sumWave);
     free(output);
     free(sineWave1);
     free(sineWave2);
     free(sineWave3);
-
 
     printf("\nTime = %g ms\n", (endTime - startTime) / 1000);
     printf("Timer Resolution = %g us\n", getMicrotimeResolution());
