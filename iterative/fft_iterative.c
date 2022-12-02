@@ -15,6 +15,9 @@ int main(int argc, char const *argv[]) {
 
     int powerOf2 = atoi(argv[1]);
     int length = pow(2, powerOf2);
+
+    printf("Input is of length %d\n", length);
+
     bool printOutput = false;
 
     if (argc == 3) {
