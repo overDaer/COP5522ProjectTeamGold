@@ -1,18 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdbool.h>
+#include <string.h>
 #include "fft.h"
 #include "microtime.h"
 
 int main(int argc, char const *argv[]) {
 
-    if (argc != 2) {
-        fprintf(stderr, "USAGE: %s [power of 2]\n", argv[0]);
+    if (argc < 2 || argc > 3) {
+        fprintf(stderr, "USAGE: %s [power of 2] [--print]\n", argv[0]);
         exit(-1);
     }
 
     int powerOf2 = atoi(argv[1]);
     int length = pow(2, powerOf2);
+    bool printOutput = false;
+
+    if (argc == 3) {
+        if (strcmp(argv[2], "--print") == 0) {
+            printOutput = true;
+        }
+    }
 
     struct complex *sumWave = malloc(length * sizeof(struct complex));
     //create arbitrary sine waves to sum
@@ -25,20 +34,20 @@ int main(int argc, char const *argv[]) {
         sumWave[i].imag = sineWave1[i].imag + sineWave2[i].imag + sineWave3[i].imag;
     }
 
-#ifdef DEBUG
-    printf("Printing input Array\n");
-    PrintComplexArray(sumWave, length);
-#endif
+    if (printOutput) {
+        printf("Printing input Array\n");
+        PrintComplexArray(sumWave, length);
+    }
 
     struct complex *output = malloc(length * sizeof(struct complex));
     double startTime = microtime();
     iterativeFFT(sumWave, powerOf2);
     double endTime = microtime();
 
-#ifdef DEBUG
-    printf("Printing output Array\n");
-    PrintComplexArray(sumWave, length);
-#endif
+    if (printOutput) {
+        printf("Printing output Array\n");
+        PrintComplexArray(sumWave, length);
+    }
 
     free(sumWave);
     free(output);

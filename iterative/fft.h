@@ -5,9 +5,16 @@ struct complex {
     double imag;
 };
 
+void recursiveFFT(struct complex *inputArray, int length);
+
 void iterativeFFT(struct complex *inputArray, int length);
+
 void evaluate(struct complex *data, int length);
+
 void shuffle(struct complex *data, int length);
+
 void PrintComplexArray(struct complex *printingArray, int length);
+
 struct complex MultiplyComplex(struct complex a, struct complex b);
-struct complex * GenerateSineArray(int samples, int frequency, int amplitude);
+
+struct complex *GenerateSineArray(int samples, int frequency, int amplitude);
