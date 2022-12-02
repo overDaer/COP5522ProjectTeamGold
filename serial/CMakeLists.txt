@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
-set(CMAKE_PROJECT_NAME  "fft_iterative")
+set(CMAKE_PROJECT_NAME  "fft_serial")
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "-O3")
-
-# Comment the line below to disable printing.
-#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
 project(${CMAKE_PROJECT_NAME} C)
 
