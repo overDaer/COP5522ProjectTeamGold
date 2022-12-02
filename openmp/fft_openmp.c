@@ -1,15 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <stdbool.h>
+#include <omp.h>
 #include <string.h>
+#include <stdbool.h>
 #include "fft.h"
 #include "microtime.h"
 
+bool isPowerOf2(int n) {
+    return n && (!(n & (n - 1)));
+}
+
 int main(int argc, char const *argv[]) {
 
-    if (argc < 2 || argc > 3) {
-        fprintf(stderr, "USAGE: %s [power of 2] [--print]\n", argv[0]);
+    if (argc < 3 || argc > 4) {
+        fprintf(stderr, "USAGE: %s [power of 2] [threads] [--print]\n", argv[0]);
+        exit(-1);
+    }
+
+    int threads = atoi(argv[2]);
+    bool printOutput = false;
+
+    if (argc == 4) {
+        if (strcmp(argv[3], "--print") == 0) {
+            printOutput = true;
+        }
+    }
+
+    if (!isPowerOf2(threads)) {
+        fprintf(stderr, "Threads must be power of 2.\n");
         exit(-1);
     }
 
@@ -18,13 +37,9 @@ int main(int argc, char const *argv[]) {
 
     printf("Input is of length %d\n", length);
 
-    bool printOutput = false;
+    omp_set_dynamic(0);
+    omp_set_num_threads(threads);
 
-    if (argc == 3) {
-        if (strcmp(argv[2], "--print") == 0) {
-            printOutput = true;
-        }
-    }
 
     struct complex *sumWave = malloc(length * sizeof(struct complex));
     //create arbitrary sine waves to sum
@@ -41,7 +56,6 @@ int main(int argc, char const *argv[]) {
         printf("Printing input Array\n");
         PrintComplexArray(sumWave, length);
     }
-
     struct complex *output = malloc(length * sizeof(struct complex));
     double startTime = microtime();
     iterativeFFT(sumWave, powerOf2);
@@ -57,7 +71,6 @@ int main(int argc, char const *argv[]) {
     free(sineWave1);
     free(sineWave2);
     free(sineWave3);
-
 
     printf("\nTime = %g ms\n", (endTime - startTime) / 1000);
     printf("Timer Resolution = %g us\n", getMicrotimeResolution());

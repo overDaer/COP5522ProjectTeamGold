@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.24)
-set(CMAKE_PROJECT_NAME  "fft_serial")
+set(CMAKE_PROJECT_NAME  "fft_openmp")
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_FLAGS "-O3")
+set(CMAKE_C_FLAGS "-O3 -fopenmp")
 
 project(${CMAKE_PROJECT_NAME} C)
 
 include_directories(.)
 
 add_executable(${CMAKE_PROJECT_NAME}
-        fft_serial.c
+        fft_openmp.c
         fft.h
         fft.c
         microtime.c
