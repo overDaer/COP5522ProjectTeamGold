@@ -1,17 +1,51 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <omp.h>
 #include "fft.h"
-#include "microtime.h"
 
-// Adapted from https://github.com/rshuston/FFT-C
+void recursiveFFT(struct complex *inputArray, int length){
+    int n = length;
+    int half = n / 2;
+
+    if (n == 1) {
+        return;
+    }
+
+    //allocate memory of even and odd
+    struct complex *oddArray = malloc(half * sizeof(struct complex));
+    struct complex *evenArray = malloc(half * sizeof(struct complex));
+    for (int i = 0; 2 * i < n; i++){
+        //Copy even and odd to separate Arrays
+        evenArray[i].real = inputArray[i * 2].real;
+        evenArray[i].imag = inputArray[i * 2].imag;
+        oddArray[i].real = inputArray[i * 2 + 1].real;
+        oddArray[i].imag = inputArray[i * 2 + 1].imag;
+    }
+    //recursive call halves until size of arrays are n == 1
+
+    recursiveFFT(evenArray, half);
+    recursiveFFT(oddArray, half);
+
+    for (int i = 0; i < n /2; i++){
+        struct complex w;
+        w.real = cos(2.0 * M_PI * (double)(i) / (double)(n));
+        w.imag = -sin(2.0 * M_PI * (double)(i) / (double)(n));
+        struct complex mulipliedResult = MultiplyComplex(w, oddArray[i]);
+        inputArray[i].real = evenArray[i].real + mulipliedResult.real;
+        inputArray[i].imag = evenArray[i].imag + mulipliedResult.imag;
+        inputArray[i + n / 2].real = evenArray[i].real - mulipliedResult.real;
+        inputArray[i + n / 2].imag = evenArray[i].imag - mulipliedResult.imag;
+    }
+
+    free(evenArray);
+    free(oddArray);
+}
+
 void iterativeFFT(struct complex *inputArray, int length) {
     shuffle(inputArray, length);
     evaluate(inputArray, length);
 }
 
-// Adapted from https://github.com/rshuston/FFT-C
 void shuffle(struct complex *data, int length) {
 
 #pragma omp parallel default(none) shared(length, data)
@@ -38,51 +72,51 @@ void shuffle(struct complex *data, int length) {
     }
 }
 
-// Adapted from https://github.com/rshuston/FFT-C
 void evaluate(struct complex *data, int length) {
-    unsigned N;
-    unsigned r;
-    unsigned m, md2;
-    unsigned n, k;
-    unsigned i_e, i_o;
-    double theta_2pi;
-    double theta;
-    struct complex Wm, Wmk;
-    struct complex u, t;
 
-    N = 1 << length;
-    theta_2pi = -M_PI;
-    theta_2pi *= 2;
+#pragma omp parallel default(none) shared(data, length)
+    {
+        unsigned N;
+        unsigned r;
+        unsigned m, md2;
+        unsigned n, k;
+        unsigned i_e, i_o;
+        double theta_2pi;
+        double theta;
+        struct complex Wm, Wmk;
+        struct complex u, t;
 
-    for (r = 1; r <= length; r++) {
-        m = 1 << r;
-        md2 = m >> 1;
-        theta = theta_2pi / m;
-        Wm.real = cos(theta);
-        Wm.imag = sin(theta);
+        N = 1 << length;
+        theta_2pi = -M_PI;
+        theta_2pi *= 2;
 
-        for (n = 0; n < N; n += m) {
-            Wmk.real = 1.f;
-            Wmk.imag = 0.f;
-            for (k = 0; k < md2; k++) {
-                i_e = n + k;
-                i_o = i_e + md2;
-                u.real = data[i_e].real;
-                u.imag = data[i_e].imag;
-                t = MultiplyComplex(Wmk, data[i_o]);
-                data[i_e].real = u.real + t.real;
-                data[i_e].imag = u.imag + t.imag;
-                data[i_o].real = u.real - t.real;
-                data[i_o].imag = u.imag - t.imag;
-                t = MultiplyComplex(Wmk, Wm);
-                Wmk = t;
+#pragma omp for nowait
+        for (r = 1; r <= length; r++) {
+            m = 1 << r;
+            md2 = m >> 1;
+            theta = theta_2pi / m;
+            Wm.real = cos(theta);
+            Wm.imag = sin(theta);
+
+            for (n = 0; n < N; n += m) {
+                Wmk.real = 1.f;
+                Wmk.imag = 0.f;
+                for (k = 0; k < md2; k++) {
+                    i_e = n + k;
+                    i_o = i_e + md2;
+                    u.real = data[i_e].real;
+                    u.imag = data[i_e].imag;
+                    t = MultiplyComplex(Wmk, data[i_o]);
+                    data[i_e].real = u.real + t.real;
+                    data[i_e].imag = u.imag + t.imag;
+                    data[i_o].real = u.real - t.real;
+                    data[i_o].imag = u.imag - t.imag;
+                    t = MultiplyComplex(Wmk, Wm);
+                    Wmk = t;
+                }
             }
         }
-
     }
-//
-//    printf("Outer loop executions: %d\n", outerCount);
-//    printf("Inner loop executions: %d\n", innerCount);
 }
 
 void PrintComplexArray(struct complex *printingArray, int length) {

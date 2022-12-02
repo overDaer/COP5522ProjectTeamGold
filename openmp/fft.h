@@ -5,6 +5,7 @@ struct complex {
     double imag;
 };
 
+void recursiveFFT(struct complex *inputArray, int length);
 void iterativeFFT(struct complex *inputArray, int length);
 void evaluate(struct complex *data, int length);
 void shuffle(struct complex *data, int length);
