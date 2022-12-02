@@ -40,6 +40,7 @@ int main(int argc, char const *argv[]) {
     omp_set_dynamic(0);
     omp_set_num_threads(threads);
 
+    printf("omp_get_max_threads(): %d\n", omp_get_max_threads());
 
     struct complex *sumWave = malloc(length * sizeof(struct complex));
     //create arbitrary sine waves to sum
