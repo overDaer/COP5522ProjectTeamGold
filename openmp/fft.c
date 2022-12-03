@@ -51,9 +51,6 @@ void shuffle(struct complex *data, int length) {
 
 #pragma omp parallel default(none) shared(length, data)
     {
-        printf("omp_get_num_threads(): %d\n", omp_get_num_threads());
-        printf("shuffle() called by thread #%d\n", omp_get_thread_num());
-
         int i;
         int j = 0;
         int N = 1 << length;
