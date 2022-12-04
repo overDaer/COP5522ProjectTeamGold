@@ -5,6 +5,7 @@ This is the COP5522 class project repository.
 ## Documentation
 
 Access the video going over the project here: https://youtu.be/iUrCV7SN1nw
+
 The `docs` folder contains the following documents:
 
 - Project proposal.
