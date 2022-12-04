@@ -35,6 +35,8 @@ The algorithm exepects input sizes that are powers of two. There are solutions i
 
 Appendix \ref{appendix:codefiles} lists the structure of the code files for the three implementations. Instructions for building the three executables are in Appendix \ref{appendix:building}. Instructions for running the three executables are in Appendix \ref{appendix:running}.
 
+The video demonstration for this project can be viewed at https://youtu.be/iUrCV7SN1nw.
+
 
 \section{Testing Methodology}
 To ensure meaningful runtime values, the input sample size must be adequately large. For the tests, a sample size of $2^{22}$ samples is used. The tests generate three cosine waves. The first waveform has frequency of one and an amplitude of ten. The second waveform has frequency of two and an amplitude of four. The third waveform has frequency of four and an amplitude of five (Figure~\ref{figure:input-waveforms}). We generate the samples over a period of $2\pi$, and the summed waveform (Figure~\ref{figure:summed-waveform}) is used as the input for the FFT calculation. The FFT results are shown in Figure~\ref{figure:fft-result}
