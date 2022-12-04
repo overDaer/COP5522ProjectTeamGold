@@ -14,7 +14,7 @@ All documents are created using LaTeX then typset to PDF. Details are in the `RE
 
 ## Code Structure
 
-The serial and pThread variants of the program are located in the `serial` and `pthreads` folders respectively.
+The serial, iterative, and openMP variants of the program are located in their respective folders.
 
 ## Running the code
 
